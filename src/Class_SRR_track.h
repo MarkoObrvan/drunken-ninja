@@ -10,8 +10,7 @@ private:
 	unsigned short int CAN1_TrackStatus;
 	unsigned short int CAN1_Track_1;
 	unsigned short int CAN1_Track_2;
-	unsigned short int CAN1_ClusterStat;
-	unsigned short int CAN1_Cluster_1;
+
 	
 	
 	//Track Status
@@ -42,14 +41,25 @@ public:
     SRRTrack(int SRR_track_id);
  
     void SetSRRMsgID(int SRR_track_id);
+	
+	void SetTrackStatus(struct can_frame frame);
+	
+	void SetTrack1(struct can_frame &frame);
+	
+	void SetTrack2(struct can_frame &frame);
+ 
+	void Display();
+ 
  
     int GetID() { return ID; }
 	unsigned short int GetRadarStatus(){return Radar_Status;}
 	unsigned short int GetTrackStatus(){return CAN1_TrackStatus;}
 	unsigned short int GetTrack1(){return CAN1_Track_1;}
 	unsigned short int GetTrack2(){return CAN1_Track_2;}
-	unsigned short int GetClusterStatus(){return CAN1_ClusterStat;}
-	unsigned short int GetCluster1(){return CAN1_Cluster_1;}
+	unsigned short int GetIndex(){ return Track_Index;}
+	float GetLongDispl(){ return Track_LongDispl;}
+	float GetLatDispl(){ return Track_LatDispl;}
+
 };
  
 #endif
