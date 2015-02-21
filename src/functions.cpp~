@@ -1,0 +1,10 @@
+#include "functions.h"
+#include "structs.h"
+
+inline void fun_radar_status(){
+
+	Radar_Status.ACTL_Mode = frame.data[0] & 0x3F;
+	Radar_Status.Radar_Cfg_Status = frame.data[1] >> 4;
+	Radar_Status.RadarSt_RollCount = frame.data[1] & 0x03;
+
+}

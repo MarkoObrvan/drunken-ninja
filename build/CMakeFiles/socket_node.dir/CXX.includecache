@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/leviathan/drunken-ninja/src/CAN_parser.cpp
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+string.h
+-
+errno.h
+-
+iostream
+-
+iomanip
+-
+math.h
+-
+net/if.h
+-
+sys/types.h
+-
+sys/socket.h
+-
+sys/ioctl.h
+-
+Class_SRR_track.h
+/home/leviathan/drunken-ninja/src/Class_SRR_track.h
+
+/home/leviathan/drunken-ninja/src/Class_SRR_track.cpp
+Class_SRR_track.h
+/home/leviathan/drunken-ninja/src/Class_SRR_track.h
+
+/home/leviathan/drunken-ninja/src/Class_SRR_track.h
+

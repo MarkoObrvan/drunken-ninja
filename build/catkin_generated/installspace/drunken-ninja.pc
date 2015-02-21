@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: drunken-ninja
+Description: Description of drunken-ninja
+Version: 1.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

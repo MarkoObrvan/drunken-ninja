@@ -1,0 +1,8 @@
+prefix=/home/leviathan/drunken-ninja/build/devel
+
+Name: drunken-ninja
+Description: Description of drunken-ninja
+Version: 1.0.0
+Cflags: 
+Libs: -L/home/leviathan/drunken-ninja/build/devel/lib 
+Requires: 

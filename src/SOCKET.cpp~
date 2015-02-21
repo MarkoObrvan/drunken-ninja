@@ -1,0 +1,475 @@
+/*READ BEFORE USAGE!
+if OS wont recognise canX (X-0,1,2,3,4,5...) install drivers from 
+http://www.peak-system.com/fileadmin/media/linux/index.htm
+
+Please make sure you set baud rate of canX!
+sudo ip link set can0 up txqueuelen 1000 type can bitrate 500000
+
+compile with
+g++ SOCKET.cpp -o socket_node -I/opt/ros/hydro/include -L/opt/ros/hydro/lib -Wl,-rpath,/opt/ros/hydro/lib -lroscpp -lrosconsole -lrostime
+
+
+*/
+
+using namespace std;
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+ 
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+ 
+#include <linux/can.h>
+#include <linux/can/raw.h>
+
+#include <ros/ros.h>
+
+
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <tf/transform_broadcaster.h>
+#include <pcl/io/pcd_io.h>
+
+
+#include "structs.h"
+#include "functions.h"
+
+
+
+#define CID 0x200  //Device message ID 0x200 + 0x10*ID4
+#define track 1    //1 for track 0 for clusters
+#define TEST 0     //1 for testrun, 2k loops only
+#define PI 3.14159265
+
+
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+
+/*
+note to myself, structures were here
+*/
+
+
+int Device_ID=CID, RadarStatus, CAN1_ClusterStat, CAN1_Cluster_1, 
+CAN1_TrackStatus, CAN1_Track_1, CAN1_Track_2;
+
+struct can_frame frame;
+//struct track_1;
+
+
+radar_status_structure Radar_Status;
+track_status_structure Track_Status;
+track_1_structure track_1;
+track_2_structure track_2;
+cluster_status_structure Cluster_Status;
+cluster_1_structure cluster_1;
+
+
+/*Init function which takes given ID 
+message and calculates message IDs 
+to receive and process based on it
+*/
+void input_init(){
+	int id_no;
+
+	id_no=(CID % 0x100)/0x10;
+	RadarStatus = 0x60A + id_no*0x10;
+	CAN1_ClusterStat = 0x70B + id_no*0x10;
+	CAN1_Cluster_1 = 0x70C + id_no*0x10;
+	CAN1_TrackStatus = 0x60B + id_no*0x10;
+	CAN1_Track_1 = 0x60C + id_no*0x10;
+	CAN1_Track_2 = 0x60D + id_no*0x10;
+
+}
+
+
+/*
+Function takes and process
+radar status message
+*/
+
+inline void fun_radar_status(){
+
+	Radar_Status.ACTL_Mode = frame.data[0] & 0x3F;
+	Radar_Status.Radar_Cfg_Status = frame.data[1] >> 4;
+	Radar_Status.RadarSt_RollCount = frame.data[1] & 0x03;
+
+}
+
+
+/*
+*********************************************************************
+TRACK FUNCTIONS BEGIN HERE
+*********************************************************************
+*/
+
+inline void fun_track_status(){
+
+	Track_Status.NumOfTracks = frame.data[0];
+	Track_Status.TrackSt_RollCount = frame.data[1] & 0x03;
+//cout << hex << Track_Status.NumOfTracks << " " << hex << Track_Status.TrackSt_RollCount << endl;
+
+}
+
+inline void fun_track_1(){
+
+	track_1.Track_ID = frame.data[0]*256 + frame.data[1]; //OK
+	track_1.Track_LongDispl = (frame.data[2] & 0x3F) * 8 + (frame.data[3] >> 5); //OK
+	track_1.Track_LatDispl = frame.data[4] * 4 + (frame.data[5] >> 6); //OK
+	track_1.Track_Index = frame.data[3] & 0x1F; //OK
+	track_1.Track_VrelLong = (frame.data[5] & 0x3F) * 64 + (frame.data[6] >> 2); //OK
+	track_1.Track_VrelLat = frame.data[7]; //OK
+	track_1.Track1_RollCount = frame.data[6] & 0x03;
+	//track_1.refresh_var = 0;
+
+	track_1.Track_LongDispl = track_1.Track_LongDispl * 0.1;
+	track_1.Track_LatDispl = track_1.Track_LatDispl * 0.1 - 51.1;
+	track_1.Track_VrelLong = track_1.Track_VrelLong * 0.02 - 35;
+	track_1.Track_VrelLat = track_1.Track_VrelLat * 0.25 - 32;
+
+//cout << hex << track_1.Track_ID<< endl << track_1.Track_LongDispl<< endl << track_1.Track_LatDispl<< endl << track_1.Track_Index<< endl << track_1.Track_VrelLong<< endl << track_1.Track_VrelLat<< endl << track_1.Track1_RollCount  << endl;
+
+/*
+cout << "ID         " << track_1.Track_ID << endl;
+cout << "long Displ " << track_1.Track_LongDispl << "m" <<endl;
+cout << "lat Displ  " << track_1.Track_LatDispl << "m" <<endl;
+cout << "Index      " << track_1.Track_Index <<endl;
+cout << "Vrel Long  " << track_1.Track_VrelLong << "m/s" <<endl;
+cout << "Vrel Lat   " << track_1.Track_VrelLat << "m/s" <<endl;
+cout << "Roll Count " << track_1.Track1_RollCount <<endl;
+*/
+
+}
+
+
+
+inline void fun_track_2(){
+
+
+	track_2.Track_RCSValue = frame.data[0];
+	track_2.Track_Lifetime = frame.data[1]*256 + frame.data[2]; 
+	track_2.Track_Index2 = frame.data[3] & 0x1F;
+	track_2.Track2_RollCount = frame.data[4] & 0x03;
+
+	track_2.Track_RCSValue = track_2.Track_RCSValue / 2;
+	track_2.Track_Lifetime = track_2.Track_Lifetime / 10;
+
+/*
+cout << track_2.Track_RCSValue << "dBm^2" <<endl;
+cout << track_2.Track_Lifetime << "s" <<endl;
+cout << track_2.Track_Index2 <<endl;
+cout << track_2.Track2_RollCount <<endl;
+*/
+
+}
+
+/*
+*********************************************************************
+TRACK FUNCTIONS END HERE
+*********************************************************************
+*/
+
+
+
+
+
+/*
+*********************************************************************
+CLUSTER FUNCTIONS BEGIN HERE
+*********************************************************************
+*/
+
+void inline fun_ClusterStat(){
+
+	Cluster_Status.NoOfClusters = frame.data[0];
+	Cluster_Status.ClusterSt_RollCount = frame.data[1] & 0x03;
+
+	
+
+}
+
+void inline fun_Cluster_1(){
+
+	cluster_1.Cluster_Index = frame.data[0];
+	cluster_1.Cluster1_RollCount = frame.data[4] >> 6;
+	cluster_1.Cluster_RCSValue = frame.data[1];
+	cluster_1.Cluster_Range = frame.data[2];
+	cluster_1.Cluster_Azimuth = frame.data[3] & 0x7F; 
+	cluster_1.Cluster_Vrel = (frame.data[4] & 0x07) * 256 + frame.data[5];
+
+
+	cluster_1.Cluster_RCSValue = (cluster_1.Cluster_RCSValue * 0.5) - 50;
+	cluster_1.Cluster_Range = cluster_1.Cluster_Range * 0.2;
+	cluster_1.Cluster_Azimuth = cluster_1.Cluster_Azimuth * 2 - 90;
+	cluster_1.Cluster_Vrel = cluster_1.Cluster_Vrel * 0.05 - 35;
+
+}
+
+
+
+/*
+*********************************************************************
+CLUSTER FUNCTIONS END HERE
+*********************************************************************
+*/
+
+
+
+int main(int argc, char** argv)
+{
+
+	int testrun=1000;
+
+	int s, i, j;
+	int nbytes;
+	struct sockaddr_can addr;
+//	struct can_frame frame;
+	struct ifreq ifr;
+
+	char *ifname = "can0";
+ 
+	if((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+		perror("Error while opening socket");
+		return -1;
+	}
+ 
+	strcpy(ifr.ifr_name, ifname);
+	ioctl(s, SIOCGIFINDEX, &ifr);
+ 
+	addr.can_family  = AF_CAN;
+	addr.can_ifindex = ifr.ifr_ifindex; 
+	addr.can_ifindex = 0; 
+ 
+	printf("%s at index %d\n", ifname, ifr.ifr_ifindex);
+ 
+	if(bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("Error in socket bind");
+		return -2;
+	}
+ /*
+	frame.can_id  = 0x60A;
+	frame.can_dlc = 8; //payload in bytes
+	frame.data[0] = 0x00; //message
+	frame.data[1] = 0x00; //message
+	frame.data[2] = 0x00; //message
+	frame.data[3] = 0x00; //message
+	frame.data[4] = 0x00; //message
+	frame.data[5] = 0x00; //message
+	frame.data[6] = 0x00; //message
+	frame.data[7] = 0x00; //message
+//Pisi u can0
+	nbytes = write(s, &frame, sizeof(struct can_frame));
+
+	printf("Wrote %d bytes\n", nbytes);
+	printf("%s\n", strerror(errno));
+
+//test
+*/
+	input_init();
+
+ 	ros::init(argc, argv, "SRR_node");
+
+	ros::NodeHandle nh;
+
+	ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2> ("output2", 100);
+	PointCloud::Ptr msg (new PointCloud);
+
+	msg->height = msg->width = 1;
+	msg->header.frame_id = "socketcanframe";
+	sensor_msgs::PointCloud2 output;
+	
+	
+	ros::start();
+
+
+
+/*
+If track constant is set
+work with tracks
+else work with clusters
+*/
+
+/*
+*********************************************************************
+TRACK PROCESSING BEGIN HERE
+*********************************************************************
+*/
+int g=1;
+	if (track){
+
+		while(testrun){
+			g++;
+			
+			if(TEST){
+				testrun--;
+			}
+
+
+			nbytes = read(s, &frame, sizeof(struct can_frame));
+
+		//	ROS_INFO_STREAM("Test!");
+
+			if (nbytes < 0) {
+				perror("can raw socket read");
+				return 1;
+			} 
+
+			else if (nbytes < sizeof(struct can_frame)) {
+				fprintf(stderr, "read: incomplete CAN frame\n");
+			//	return 1;
+			}
+	
+//			else printf("----frame id: %x     with data: %x %x %x %x %x %x %x %x ----\n",frame.can_id, frame.data[0],
+//			frame.data[1],frame.data[2], frame.data[3], frame.data[4], frame.data[5], frame.data[6], frame.data[7]);
+
+			if(track_1.Track_Index == 0){
+				pub.publish (output);
+				msg->points.clear();
+			}
+
+			if (frame.can_id == RadarStatus)
+					fun_radar_status();
+
+			else if (frame.can_id == CAN1_TrackStatus)
+					fun_track_status();
+
+			else if (frame.can_id == CAN1_Track_1){
+					fun_track_1();
+
+					msg->points.push_back (pcl::PointXYZ(track_1.Track_LongDispl, track_1.Track_LatDispl, 0.0));
+					cout << "X axis long: " << track_1.Track_LongDispl << "Y axis lat: " << track_1.Track_LatDispl << endl;
+					msg->height = 0;
+					msg->width = 0;
+
+					msg->header.stamp =  g;
+
+					pcl::toROSMsg(*msg, output);
+
+/*					if(msg->points.size()>60){
+						msg->points.erase(msg->points.begin());
+						msg->width--;
+						//msg->points.resize(pointCloud.width)
+
+					} 
+					pub.publish (output);
+*/
+				//	ros::spinOnce();
+					}
+
+			else if (frame.can_id == CAN1_Track_2)
+					fun_track_2();
+		
+
+			
+		}
+	}
+
+
+
+
+
+/*
+else{}
+Work with clusters
+*/
+/*
+*********************************************************************
+CLUSTER PROCESSING BEGIN HERE
+*********************************************************************
+*/
+
+	else {
+		float longDispl, latDispl;
+		float radtodek = PI/180;
+
+		while(testrun){
+			g++;
+			if(TEST){
+				testrun--;
+			}
+
+			nbytes = read(s, &frame, sizeof(struct can_frame));
+
+
+			if (nbytes < 0) {
+				perror("can raw socket read");
+				return 1;
+			} 
+
+			else if (nbytes < sizeof(struct can_frame)) {
+				fprintf(stderr, "read: incomplete CAN frame\n");
+				//return 1;
+			}
+//TEST
+			if(cluster_1.Cluster_Index==0){
+				pub.publish (output);
+				msg->points.clear();
+				//msg->height = msg->width = 0;
+			}
+	
+
+
+//TEST
+
+//else printf("----frame id: %x     with data: %x %x %x %x %x %x %x %x ----\n",frame.can_id, frame.data[0], frame.data[1],frame.data[2], frame.data[3], frame.data[4], frame.data[5], frame.data[6], frame.data[7]);
+
+
+			if (frame.can_id == RadarStatus)
+					fun_radar_status();
+
+			else if (frame.can_id == CAN1_ClusterStat)
+					fun_ClusterStat();
+
+			else if (frame.can_id == CAN1_Cluster_1){
+					fun_Cluster_1();
+
+					longDispl = cluster_1.Cluster_Range * cos (abs(cluster_1.Cluster_Azimuth) * radtodek) ; //radtodek PI/180
+					latDispl = cluster_1.Cluster_Range * sin (cluster_1.Cluster_Azimuth * radtodek) ;
+					if(cluster_1.Cluster_RCSValue>0){
+						msg->points.push_back (pcl::PointXYZ(longDispl, latDispl, 0.0));
+						cout << "X axis long: " << longDispl << "Y axis lat: " << latDispl << "  RCS db: "<< cluster_1.Cluster_RCSValue << endl;
+					}
+
+
+					msg->height = 0;
+					msg->width = 0;
+
+					msg->header.stamp =  g;
+
+					pcl::toROSMsg(*msg, output);
+/*TEST
+					if(msg->points.size()>60){
+						msg->points.erase(msg->points.begin());
+						msg->width--;
+						//msg->points.resize(pointCloud.width)
+
+					} 
+
+					pub.publish (output);
+TEST*/
+
+
+
+					}
+
+
+		}
+	}
+
+	
+
+
+	ros::spin();
+	ros::shutdown();
+
+
+	return 0;
+}
