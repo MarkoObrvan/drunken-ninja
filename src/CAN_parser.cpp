@@ -6,6 +6,8 @@ Please make sure you set baud rate of canX!
 sudo ip link set can0 up txqueuelen 1000 type can bitrate 500000
 
 compile with
+this compile wont work on latest version. use cmake and make, then run exe. 
+Left it here cause i dont need to search for some commands during development
 g++ SOCKET.cpp -o socket_node -I/opt/ros/hydro/include -L/opt/ros/hydro/lib -Wl,-rpath,/opt/ros/hydro/lib -lroscpp -lrosconsole -lrostime
 */
 
@@ -45,7 +47,10 @@ typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 int main(int argc, char** argv){
 
 
-	//CAN INIT
+	/*
+	Initializing CAN over socket, just take it for granted, it works
+	there are few extra steps that are not needed at every computer
+	*/
 	struct sockaddr_can addr;
 	struct ifreq ifr;
 	struct can_frame frame;
@@ -73,8 +78,14 @@ int main(int argc, char** argv){
 
 
 	
-	//ROS INIT
-	
+	/*
+	Seting up ros node and sensor messages
+	frame_id must be the same for each message type
+	if we ant to print on samo rviz window
+	for using other windows use other frame names 
+	and separated windows. msg2 is left as example, there will
+	be no usage of it in rest of code.
+	*/
 	
  	ros::init(argc, argv, "SRR_node_2");
 
@@ -89,6 +100,11 @@ int main(int argc, char** argv){
 	msg2->height = msg2->width = 1;
 	msg2->header.frame_id = "socketcanframe2";
 
+	
+	/*
+	Separated output sensor messages are MUST
+	if we want to keep scans from separated sensors
+	*/
 	sensor_msgs::PointCloud2 output;
 	sensor_msgs::PointCloud2 output2;
 	
@@ -125,7 +141,34 @@ int main(int argc, char** argv){
 			fprintf(stderr, "read: incomplete CAN frame\n");
 		}
 		
+		/*there is display in class_srr_track.cpp 
+		for printing gathered informations
+		used to compared published informatons in 
+		this section. For additional info about class calls
+		check class file.
+		*/	
+		if (track1.SRRMsgCheckout(frame)){
+//cout << "Rosout:" << endl;
+			for (int i=0; i<=track1.GetNumOfTracks()-1; i++)
+			{
+				msg->points.push_back (pcl::PointXYZ(track1.GetLongDispl(i), track1.GetLatDispl(i), 0.0));
+//cout << "X axis long: " << track1.GetLongDispl(i) << "Y axis lat: " << track1.GetLatDispl(i) << endl;
+				msg->height = 0;
+				msg->width = 0;
+
+				msg->header.stamp =  g;
+				pcl::toROSMsg(*msg, output);				
+			}
+			
+			pub.publish (output);
+			msg->points.clear();
+//cout << "Published\n" << endl;
+		}
 		
+		
+		
+		/*
+		deprecated code, will be removed in late versions
 		if (frame.can_id == track1.GetTrackStatus())
 		{
 			track1.SetTrackStatus(frame);
@@ -152,7 +195,7 @@ int main(int argc, char** argv){
 			msg->header.stamp =  g;
 			pcl::toROSMsg(*msg, output);
 		}
-		
+		*/
 		
 		
 	
