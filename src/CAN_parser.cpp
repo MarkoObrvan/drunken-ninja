@@ -39,6 +39,7 @@ g++ SOCKET.cpp -o socket_node -I/opt/ros/hydro/include -L/opt/ros/hydro/lib -Wl,
 
 
 #include "Class_SRR_track.h"
+#include "ClassSRRCluster.h"
 
 using namespace std;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -96,10 +97,6 @@ int main(int argc, char** argv){
 	msg->height = msg->width = 1;
 	msg->header.frame_id = "socketcanframe2";
 
-	PointCloud::Ptr msg2 (new PointCloud);
-	msg2->height = msg2->width = 1;
-	msg2->header.frame_id = "socketcanframe2";
-
 	
 	/*
 	Separated output sensor messages are MUST
@@ -121,12 +118,14 @@ int main(int argc, char** argv){
 	cout << "track can2 id " << hex <<  track1.GetTrack2() << endl;
 	
 	
+	SRRCluster cluster1(0x270);
 	
-	int testrun = 10000, g=0;
+	
+	int testrun = 1000, g=0;
 	while (testrun)
 	{
 		g++;
-		//testrun--;
+		testrun--;
 		
 		nbytes = read(s, &frame, sizeof(struct can_frame));
 		
@@ -148,21 +147,36 @@ int main(int argc, char** argv){
 		check class file.
 		*/	
 		if (track1.SRRMsgCheckout(frame)){
-//cout << "Rosout:" << endl;
-			for (int i=0; i<=track1.GetNumOfTracks()-1; i++)
+			
+			for (int i=0; i<track1.GetNumOfTracks(); i++)
 			{
 				msg->points.push_back (pcl::PointXYZ(track1.GetLongDispl(i), track1.GetLatDispl(i), 0.0));
-//cout << "X axis long: " << track1.GetLongDispl(i) << "Y axis lat: " << track1.GetLatDispl(i) << endl;
 				msg->height = 0;
 				msg->width = 0;
-
 				msg->header.stamp =  g;
 				pcl::toROSMsg(*msg, output);				
 			}
 			
 			pub.publish (output);
 			msg->points.clear();
-//cout << "Published\n" << endl;
+
+		}
+		
+		
+		if (cluster1.SRRMsgCheckout(frame)){
+
+			for (int i=0; i<cluster1.GetNumOfClusters(); i++)
+			{
+				msg->points.push_back (pcl::PointXYZ(cluster1.GetLongDispl(i), cluster1.GetLatDispl(i), 0.0));
+				msg->height = 0;
+				msg->width = 0;
+				msg->header.stamp =  g;
+				pcl::toROSMsg(*msg, output2);				
+			}
+			
+			pub.publish (output2);
+			msg->points.clear();
+
 		}
 		
 		

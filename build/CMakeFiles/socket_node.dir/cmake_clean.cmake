@@ -1,6 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/socket_node.dir/src/CAN_parser.cpp.o"
   "CMakeFiles/socket_node.dir/src/Class_SRR_track.cpp.o"
+  "CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o"
   "devel/lib/drunken-ninja/socket_node.pdb"
   "devel/lib/drunken-ninja/socket_node"
 )

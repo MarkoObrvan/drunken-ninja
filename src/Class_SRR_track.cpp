@@ -41,29 +41,32 @@ int SRRTrack::SRRMsgCheckout (struct can_frame frame)
 {
 	if (frame.can_id == CAN1_TrackStatus)
 	{
+
 			SetTrackStatus(frame);
 			return 0; 
 	}
 	
 	else if(frame.can_id == CAN1_Track_1)
 	{
+
 		SetTrack1(frame);
 		return 0;
 	}
 	
 	else if (frame.can_id == CAN1_Track_2)
 	{
+
 		SetTrack2(frame);
 		
 		//DISPLAY IS HEREEEE!!!!!
-		//Display();
+		Display();
 		
-		if (Track_Index2 == NumOfTracks) return 1;
+		if (Track_Index2 == NumOfTracks-1) return 1;
 		
 		return 0;
 	}
 	
-	return -1;
+	return 0;
 }
 
 

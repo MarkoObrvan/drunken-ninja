@@ -49,26 +49,10 @@ pcl/io/pcd_io.h
 -
 Class_SRR_track.h
 /home/leviathan/drunken-ninja/src/Class_SRR_track.h
+ClassSRRCluster.h
+/home/leviathan/drunken-ninja/src/ClassSRRCluster.h
 
-/home/leviathan/drunken-ninja/src/Class_SRR_track.cpp
-Class_SRR_track.h
-/home/leviathan/drunken-ninja/src/Class_SRR_track.h
-stdio.h
--
-iostream
--
-net/if.h
--
-sys/types.h
--
-sys/socket.h
--
-sys/ioctl.h
--
-linux/can.h
--
-linux/can/raw.h
--
+/home/leviathan/drunken-ninja/src/ClassSRRCluster.h
 
 /home/leviathan/drunken-ninja/src/Class_SRR_track.h
 

@@ -833,6 +833,30 @@ src/CAN_parser.cpp.s:
 	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/CAN_parser.cpp.s
 .PHONY : src/CAN_parser.cpp.s
 
+src/ClassSRRCluster.o: src/ClassSRRCluster.cpp.o
+.PHONY : src/ClassSRRCluster.o
+
+# target to build an object file
+src/ClassSRRCluster.cpp.o:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o
+.PHONY : src/ClassSRRCluster.cpp.o
+
+src/ClassSRRCluster.i: src/ClassSRRCluster.cpp.i
+.PHONY : src/ClassSRRCluster.i
+
+# target to preprocess a source file
+src/ClassSRRCluster.cpp.i:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.i
+.PHONY : src/ClassSRRCluster.cpp.i
+
+src/ClassSRRCluster.s: src/ClassSRRCluster.cpp.s
+.PHONY : src/ClassSRRCluster.s
+
+# target to generate assembly for a file
+src/ClassSRRCluster.cpp.s:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.s
+.PHONY : src/ClassSRRCluster.cpp.s
+
 src/Class_SRR_track.o: src/Class_SRR_track.cpp.o
 .PHONY : src/Class_SRR_track.o
 
@@ -924,6 +948,9 @@ help:
 	@echo "... src/CAN_parser.o"
 	@echo "... src/CAN_parser.i"
 	@echo "... src/CAN_parser.s"
+	@echo "... src/ClassSRRCluster.o"
+	@echo "... src/ClassSRRCluster.i"
+	@echo "... src/ClassSRRCluster.s"
 	@echo "... src/Class_SRR_track.o"
 	@echo "... src/Class_SRR_track.i"
 	@echo "... src/Class_SRR_track.s"
