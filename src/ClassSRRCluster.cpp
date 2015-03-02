@@ -70,6 +70,7 @@ int SRRCluster::SRRMsgCheckout (struct can_frame frame)
 void SRRCluster::SetSRRMsgID(int SRR_track_id)
 {
     int id_no=(SRR_track_id % 0x100)/0x10;
+	ID = SRR_track_id;
 	Radar_Status = 0x60A + id_no*0x10;
 	CAN1_Cluster_Status = 0x70B + id_no*0x10;
 	CAN1_Cluster_1 = 0x70C + id_no*0x10;
