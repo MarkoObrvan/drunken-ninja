@@ -833,6 +833,30 @@ src/CAN_parser.cpp.s:
 	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/CAN_parser.cpp.s
 .PHONY : src/CAN_parser.cpp.s
 
+src/ClassARSTarget.o: src/ClassARSTarget.cpp.o
+.PHONY : src/ClassARSTarget.o
+
+# target to build an object file
+src/ClassARSTarget.cpp.o:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o
+.PHONY : src/ClassARSTarget.cpp.o
+
+src/ClassARSTarget.i: src/ClassARSTarget.cpp.i
+.PHONY : src/ClassARSTarget.i
+
+# target to preprocess a source file
+src/ClassARSTarget.cpp.i:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.i
+.PHONY : src/ClassARSTarget.cpp.i
+
+src/ClassARSTarget.s: src/ClassARSTarget.cpp.s
+.PHONY : src/ClassARSTarget.s
+
+# target to generate assembly for a file
+src/ClassARSTarget.cpp.s:
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.s
+.PHONY : src/ClassARSTarget.cpp.s
+
 src/ClassSRRCluster.o: src/ClassSRRCluster.cpp.o
 .PHONY : src/ClassSRRCluster.o
 
@@ -948,6 +972,9 @@ help:
 	@echo "... src/CAN_parser.o"
 	@echo "... src/CAN_parser.i"
 	@echo "... src/CAN_parser.s"
+	@echo "... src/ClassARSTarget.o"
+	@echo "... src/ClassARSTarget.i"
+	@echo "... src/ClassARSTarget.s"
 	@echo "... src/ClassSRRCluster.o"
 	@echo "... src/ClassSRRCluster.i"
 	@echo "... src/ClassSRRCluster.s"

@@ -7,7 +7,7 @@ private:
 	
 	unsigned short int ID;
 	unsigned short int Radar_Status;
-	unsigned short int CAN1_Target_Status;
+	unsigned short int Target_Status;
 	unsigned short int CAN1_Target_1;
 	unsigned short int CAN1_Target_2;
 	

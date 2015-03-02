@@ -40,6 +40,7 @@ g++ SOCKET.cpp -o socket_node -I/opt/ros/hydro/include -L/opt/ros/hydro/lib -Wl,
 
 #include "Class_SRR_track.h"
 #include "ClassSRRCluster.h"
+#include "ClassARSTarget.h"
 
 using namespace std;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -104,6 +105,7 @@ int main(int argc, char** argv){
 	*/
 	sensor_msgs::PointCloud2 output;
 	sensor_msgs::PointCloud2 output2;
+	sensor_msgs::PointCloud2 OutTarget1;
 	
 	
 	ros::start();
@@ -120,12 +122,14 @@ int main(int argc, char** argv){
 	
 	SRRCluster cluster1(0x270);
 	
+	ARSTarget target1(0x200);
+	
 	
 	int testrun = 1000, g=0;
 	while (testrun)
 	{
 		g++;
-		testrun--;
+		//testrun--;
 		
 		nbytes = read(s, &frame, sizeof(struct can_frame));
 		
@@ -147,7 +151,7 @@ int main(int argc, char** argv){
 		check class file.
 		*/	
 		if (track1.SRRMsgCheckout(frame)){
-			
+cout << "Ne ulazi track" << endl;			
 			for (int i=0; i<track1.GetNumOfTracks(); i++)
 			{
 				msg->points.push_back (pcl::PointXYZ(track1.GetLongDispl(i), track1.GetLatDispl(i), 0.0));
@@ -163,8 +167,9 @@ int main(int argc, char** argv){
 		}
 		
 		
+		/*SRR CLUSTER*/
 		if (cluster1.SRRMsgCheckout(frame)){
-
+cout << "Ne ulazi cluster" << endl;
 			for (int i=0; i<cluster1.GetNumOfClusters(); i++)
 			{
 				msg->points.push_back (pcl::PointXYZ(cluster1.GetLongDispl(i), cluster1.GetLatDispl(i), 0.0));
@@ -179,6 +184,23 @@ int main(int argc, char** argv){
 
 		}
 		
+		/*ARS TARGET*/
+		if (target1.ARSMsgCheckout(frame)){
+cout << "number of targets: "<< target1.GetSumOfTargets() <<"\n" << endl;
+			for (int i=0; i<target1.GetSumOfTargets(); i++)
+			{
+cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1.GetLatDispl(i) << endl; 
+				msg->points.push_back (pcl::PointXYZ(target1.GetLongDispl(i), target1.GetLatDispl(i), 0.0));
+				msg->height = 0;
+				msg->width = 0;
+				msg->header.stamp =  g;
+				pcl::toROSMsg(*msg, OutTarget1);				
+			}
+			
+			pub.publish (OutTarget1);
+			msg->points.clear();
+
+		}
 		
 		
 		/*

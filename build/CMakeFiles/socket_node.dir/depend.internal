@@ -3,6 +3,7 @@
 
 CMakeFiles/socket_node.dir/src/CAN_parser.cpp.o
  /home/leviathan/drunken-ninja/src/CAN_parser.cpp
+ /home/leviathan/drunken-ninja/src/ClassARSTarget.h
  /home/leviathan/drunken-ninja/src/ClassSRRCluster.h
  /home/leviathan/drunken-ninja/src/Class_SRR_track.h
  /opt/ros/hydro/include/XmlRpcDecl.h
@@ -322,6 +323,9 @@ CMakeFiles/socket_node.dir/src/CAN_parser.cpp.o
  /usr/include/pcl-1.7/pcl/point_types.h
  /usr/include/pcl-1.7/pcl/register_point_struct.h
  /usr/include/qhull/io.h
+CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o
+ /home/leviathan/drunken-ninja/src/ClassARSTarget.cpp
+ /home/leviathan/drunken-ninja/src/ClassARSTarget.h
 CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o
  /home/leviathan/drunken-ninja/src/ClassSRRCluster.cpp
  /home/leviathan/drunken-ninja/src/ClassSRRCluster.h
