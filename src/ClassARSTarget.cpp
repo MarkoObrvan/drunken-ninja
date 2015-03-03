@@ -63,7 +63,7 @@ int ARSTarget::ARSMsgCheckout (struct can_frame frame)
 		SetTarget2(frame);
 		
 		//DISPLAY IS HEREEEE!!!!!
-		Display();
+		Display();   //if (NoOfTarget2 < Sum_Of_Targets+2) 
 		
 		if (NoOfTarget2 == Sum_Of_Targets)
 		{ 
@@ -149,7 +149,10 @@ void ARSTarget::SetTarget2(struct can_frame frame)
 	Tar_RCSValu[NoOfTarget2-1] = Tar_RCSValu[NoOfTarget2-1] * 0.1 - 50;
 
 	//TODO NEKA BANANA OVDJE MOZDA?! ne dobijem float nazad!
+	//idiote, da bi dobio float varijable sigurno moraju biti long -.-
 	longDispl[NoOfTarget2-1] = Tar_Dist[NoOfTarget2-1] * cos (abs(Tar_Ang[NoOfTarget2-1]) * dek_to_rad) ;
+	//if (NoOfTarget2 < Sum_Of_Targets+2)  cout << "longdispl: " << longDispl[NoOfTarget2-1] << " = " << Tar_Dist[NoOfTarget2-1] << " * " << cos (abs(Tar_Ang[NoOfTarget2-1]) * dek_to_rad) << endl;
+	
 	latDispl[NoOfTarget2-1] = Tar_Dist[NoOfTarget2-1] * sin (Tar_Ang[NoOfTarget2-1] * dek_to_rad) ;
 	
 	//Cluster_Long[Cluster_Index] = Cluster_Range[Cluster_Index] * cos (Cluster_Azimuth[Cluster_Index] * dek_to_rad) ; //dek_to_rad PI/180

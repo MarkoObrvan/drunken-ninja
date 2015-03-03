@@ -38,8 +38,8 @@ private:
 	
 	
 	//Long and lat dist
-	long longDispl[96];
-	long latDispl[96];
+	float longDispl[96];
+	float latDispl[96];
 	
     ARSTarget() { 
 	} // private default constructor
