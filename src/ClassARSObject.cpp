@@ -22,7 +22,7 @@ Use mainly for debug, use as you wish
 */
 void ARSObject::Display()
 {
-	//cout << "gather long:" << longDispl[NoOfObject2-1] << "    lat: " << latDispl[NoOfObject2-1] << "    index: " << NoOfObject2-1 << endl; 
+	cout << "gather long:" << Obj_LongDispl[NoOfObjects-1] << "    lat: " << Obj_LatDispl[NoOfObjects-1] << "    index: " << Obj_ID-1 << endl; 
 	//cout << "NumOfObjects:" << Sum_Of_Objects<< endl; 
 }
 
@@ -43,7 +43,7 @@ and 0 if message does not belong to given track.
 */
 int ARSObject::ARSMsgCheckout (struct can_frame frame)
 {
-	if (frame.can_id == CAN1_Object_Status)
+	if (frame.can_id == Object_Status)
 	{
 			SetObjectStatus(frame);
 			return 0; 
@@ -62,11 +62,10 @@ int ARSObject::ARSMsgCheckout (struct can_frame frame)
 		SetObject2(frame);
 		
 		//DISPLAY IS HEREEEE!!!!!
-		Display();   //if (NoOfObject2 < Sum_Of_Objects+2) 
+		//if (Obj_ID <= NoOfObjects)  Display();   //if (NoOfObject2 < NoOfObjects) 
 		
 		if (Obj_ID == NoOfObjects)
 		{ 
-		//cout << "   index of Object: " << NoOfObject2 << "   sum of tar: " << Sum_Of_Objects <<endl;;
 		return 1;
 		}
 		
@@ -82,11 +81,11 @@ void ARSObject::SetARSMsgID(int ARS_Object_id)
 {
     int id_no=(ARS_Object_id % 0x100)/0x10;
 	ID = ARS_Object_id;
-	CAN1_Object_Status = 0x60A + id_no*0x10;
+	Object_Status = 0x60A + id_no*0x10;
 	CAN1_Object_1 = 0x60B + id_no*0x10;
 	CAN1_Object_2 = 0x60C + id_no*0x10;
 	
-	cout << "Object stat: " << CAN1_Object_Status << "   Object1: " << CAN1_Object_1  <<  "   Object2: " << CAN1_Object_2  <<endl;
+	cout << "Object stat: " << hex << Object_Status << "   Object1: " << CAN1_Object_1  <<  "   Object2: " << CAN1_Object_2  <<endl;
 	
 }
 
@@ -132,31 +131,32 @@ void ARSObject::SetObject1(struct can_frame frame)
 
 
 	Obj_ID = frame.data[0] >> 2;
+	
 	Obj_RolCount = frame.data[0] & 0x03; 
-	Obj_LongDispl[Obj_ID] = frame.data[1] * 4 + (frame.data[2] >> 5);
-	Obj_VrelLong[Obj_ID] = ( frame.data[2] & 0x1F ) * 128 + ( frame.data[3] >> 1 ) ;
-	Obj_AccelLong[Obj_ID] = ( frame.data[3] & 0x01 ) * 256 + frame.data[4]; 
-	Obj_ProbOfExist[Obj_ID] = frame.data[6] & 0x07;
-	Obj_DynProp[Obj_ID] = ( frame.data[6] >> 3 ) & 0x07;
-	Obj_LatDispl[Obj_ID] = frame.data[5] * 4 + ( frame.data[6] >> 6 ) ;
-	Obj_Length[Obj_ID] = frame.data[7] & 0x07;
-	Obj_Width[Obj_ID] = (frame.data[7] >> 3) & 0x07;
-	Obj_MeasStat[Obj_ID] = ( frame.data[7] >> 6 ) & 0x3;
+	Obj_LongDispl[Obj_ID-1] = frame.data[1] * 4 + (frame.data[2] >> 5);
+	Obj_VrelLong[Obj_ID-1] = ( frame.data[2] & 0x1F ) * 128 + ( frame.data[3] >> 1 ) ;
+	Obj_AccelLong[Obj_ID-1] = ( frame.data[3] & 0x01 ) * 256 + frame.data[4]; 
+	Obj_ProbOfExist[Obj_ID-1] = frame.data[6] & 0x07;
+	Obj_DynProp[Obj_ID-1] = ( frame.data[6] >> 3 ) & 0x07;
+	Obj_LatDispl[Obj_ID-1] = frame.data[5] * 4 + ( frame.data[6] >> 6 ) ;
+	Obj_Length[Obj_ID-1] = frame.data[7] & 0x07;
+	Obj_Width[Obj_ID-1] = (frame.data[7] >> 3) & 0x07;
+	Obj_MeasStat[Obj_ID-1] = ( frame.data[7] >> 6 ) & 0x3;
 	
 	
-	Obj_LongDispl[Obj_ID] = Obj_LongDispl[Obj_ID] * 0.1;
-	Obj_VrelLong[Obj_ID] = Obj_VrelLong[Obj_ID] * 0.0625 * - 128;
-	Obj_AccelLong[Obj_ID] = Obj_AccelLong[Obj_ID] * 0.0625 - 16; 
-	Obj_LatDispl[Obj_ID] = Obj_LatDispl[Obj_ID] * 0.1 - 52;
+	Obj_LongDispl[Obj_ID-1] = Obj_LongDispl[Obj_ID-1] * 0.1;
+	Obj_VrelLong[Obj_ID-1] = Obj_VrelLong[Obj_ID-1] * 0.0625 * - 128;
+	Obj_AccelLong[Obj_ID-1] = Obj_AccelLong[Obj_ID-1] * 0.0625 - 16; 
+	Obj_LatDispl[Obj_ID-1] = Obj_LatDispl[Obj_ID-1] * 0.1 - 52;
 	
 	/*have to deal how we are going to display those*/
 	
 	/*
-	Obj_ProbOfExist[Obj_ID] = ;
-	Obj_DynProp[Obj_ID] = ;
-	Obj_Length[Obj_ID] = ;
-	Obj_Width[Obj_ID] = ;
-	Obj_MeasStat[Obj_ID] = ;
+	Obj_ProbOfExist[Obj_ID-1] = ;
+	Obj_DynProp[Obj_ID-1] = ;
+	Obj_Length[Obj_ID-1] = ;
+	Obj_Width[Obj_ID-1] = ;
+	Obj_MeasStat[Obj_ID-1] = ;
 	*/
 
 }
@@ -164,12 +164,12 @@ void ARSObject::SetObject1(struct can_frame frame)
 void ARSObject::SetObject2(struct can_frame frame)
 {
 
-	Obj_RCSVal[Obj_ID] = frame.data[0];
-	Obj_LatSpeed[Obj_ID] = frame.data[1];
-	Obj_ObstacleProbability[Obj_ID] = frame.data[2] & 0x7F;
+	Obj_RCSVal[Obj_ID-1] = frame.data[0];
+	Obj_LatSpeed[Obj_ID-1] = frame.data[1];
+	Obj_ObstacleProbability[Obj_ID-1] = frame.data[2] & 0x7F;
 	
-	Obj_RCSVal[Obj_ID] = Obj_RCSVal[Obj_ID] * 0.5 - 64;
-	Obj_LatSpeed[Obj_ID] = Obj_LatSpeed[Obj_ID] * 0.25 - 32;
+	Obj_RCSVal[Obj_ID-1] = Obj_RCSVal[Obj_ID-1] * 0.5 - 64;
+	Obj_LatSpeed[Obj_ID-1] = Obj_LatSpeed[Obj_ID-1] * 0.25 - 32;
 	
 }
 

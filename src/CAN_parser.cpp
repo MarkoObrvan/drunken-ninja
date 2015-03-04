@@ -107,6 +107,7 @@ int main(int argc, char** argv){
 	sensor_msgs::PointCloud2 output;
 	sensor_msgs::PointCloud2 output2;
 	sensor_msgs::PointCloud2 OutTarget1;
+	sensor_msgs::PointCloud2 OutObject1;
 	
 	
 	ros::start();
@@ -115,11 +116,12 @@ int main(int argc, char** argv){
 	
 	SRRTrack track1(0x270);
 	
+	/*
 	cout << "radar status id " << hex << track1.GetRadarStatus() << endl;
 	cout << "track status id " << hex <<  track1.GetTrackStatus() << endl;
 	cout << "track can1 id " << hex <<  track1.GetTrack1() << endl;
 	cout << "track can2 id " << hex <<  track1.GetTrack2() << endl;
-	
+	*/
 	
 	SRRCluster cluster1(0x270);
 	
@@ -201,6 +203,25 @@ cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1
 			}
 			
 			pub.publish (OutTarget1);
+			msg->points.clear();
+
+		}
+		
+		/*ARS OBJECT*/
+		if (object1.ARSMsgCheckout(frame)){
+//cout << "number of targets: "<< object1.GetSumOfObjects() <<"\n" << endl;
+			for (int i=0; i<object1.GetSumOfObjects(); i++)
+			{
+cout << "long disp: " << object1.GetLongDispl(i) << "   lat displ: " <<  object1.GetLatDispl(i) << endl;
+cout << endl; 
+				msg->points.push_back (pcl::PointXYZ(object1.GetLongDispl(i), object1.GetLatDispl(i), 0.0));
+				msg->height = 0;
+				msg->width = 0;
+				msg->header.stamp =  g;
+				pcl::toROSMsg(*msg, OutObject1);				
+			}
+			
+			pub.publish (OutObject1);
 			msg->points.clear();
 
 		}
