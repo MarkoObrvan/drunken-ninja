@@ -29,7 +29,7 @@ include_directories(${PCL_INCLUDE_DIRS})
 
 link_directories(${PCL_LIBRARY_DIRS})
 # Define an execuable target called socket_node 
-add_executable(socket_node src/CAN_parser.cpp src/Class_SRR_track.cpp src/ClassSRRCluster.cpp src/ClassARSTarget.cpp) 
+add_executable(socket_node src/CAN_parser.cpp src/Class_SRR_track.cpp src/ClassSRRCluster.cpp src/ClassARSTarget.cpp src/ClassARSObject.cpp) 
 # Link the hello_world_node target against the libraries used by roscpp
 target_link_libraries(socket_node ${roscpp_LIBRARIES})
 target_link_libraries(socket_node ${PCL_LIBRARIES})

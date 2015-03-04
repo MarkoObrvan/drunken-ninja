@@ -5,6 +5,7 @@ SET(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 SET(CMAKE_DEPENDS_CHECK_CXX
   "/home/leviathan/drunken-ninja/src/CAN_parser.cpp" "/home/leviathan/drunken-ninja/build/CMakeFiles/socket_node.dir/src/CAN_parser.cpp.o"
+  "/home/leviathan/drunken-ninja/src/ClassARSObject.cpp" "/home/leviathan/drunken-ninja/build/CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o"
   "/home/leviathan/drunken-ninja/src/ClassARSTarget.cpp" "/home/leviathan/drunken-ninja/build/CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o"
   "/home/leviathan/drunken-ninja/src/ClassSRRCluster.cpp" "/home/leviathan/drunken-ninja/build/CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o"
   "/home/leviathan/drunken-ninja/src/Class_SRR_track.cpp" "/home/leviathan/drunken-ninja/build/CMakeFiles/socket_node.dir/src/Class_SRR_track.cpp.o"

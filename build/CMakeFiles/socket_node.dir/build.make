@@ -138,12 +138,36 @@ CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o.provides: CMakeFiles/socket_
 
 CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o.provides.build: CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o
 
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o: CMakeFiles/socket_node.dir/flags.make
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o: ../src/ClassARSObject.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/leviathan/drunken-ninja/build/CMakeFiles $(CMAKE_PROGRESS_5)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o -c /home/leviathan/drunken-ninja/src/ClassARSObject.cpp
+
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/leviathan/drunken-ninja/src/ClassARSObject.cpp > CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.i
+
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/leviathan/drunken-ninja/src/ClassARSObject.cpp -o CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.s
+
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.requires:
+.PHONY : CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.requires
+
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.provides: CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.requires
+	$(MAKE) -f CMakeFiles/socket_node.dir/build.make CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.provides.build
+.PHONY : CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.provides
+
+CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.provides.build: CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o
+
 # Object files for target socket_node
 socket_node_OBJECTS = \
 "CMakeFiles/socket_node.dir/src/CAN_parser.cpp.o" \
 "CMakeFiles/socket_node.dir/src/Class_SRR_track.cpp.o" \
 "CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o" \
-"CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o"
+"CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o" \
+"CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o"
 
 # External object files for target socket_node
 socket_node_EXTERNAL_OBJECTS =
@@ -152,6 +176,7 @@ devel/lib/drunken-ninja/socket_node: CMakeFiles/socket_node.dir/src/CAN_parser.c
 devel/lib/drunken-ninja/socket_node: CMakeFiles/socket_node.dir/src/Class_SRR_track.cpp.o
 devel/lib/drunken-ninja/socket_node: CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o
 devel/lib/drunken-ninja/socket_node: CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o
+devel/lib/drunken-ninja/socket_node: CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o
 devel/lib/drunken-ninja/socket_node: /opt/ros/hydro/lib/libroscpp.so
 devel/lib/drunken-ninja/socket_node: /usr/lib/libboost_signals-mt.so
 devel/lib/drunken-ninja/socket_node: /usr/lib/libboost_filesystem-mt.so
@@ -268,6 +293,7 @@ CMakeFiles/socket_node.dir/requires: CMakeFiles/socket_node.dir/src/CAN_parser.c
 CMakeFiles/socket_node.dir/requires: CMakeFiles/socket_node.dir/src/Class_SRR_track.cpp.o.requires
 CMakeFiles/socket_node.dir/requires: CMakeFiles/socket_node.dir/src/ClassSRRCluster.cpp.o.requires
 CMakeFiles/socket_node.dir/requires: CMakeFiles/socket_node.dir/src/ClassARSTarget.cpp.o.requires
+CMakeFiles/socket_node.dir/requires: CMakeFiles/socket_node.dir/src/ClassARSObject.cpp.o.requires
 .PHONY : CMakeFiles/socket_node.dir/requires
 
 CMakeFiles/socket_node.dir/clean:

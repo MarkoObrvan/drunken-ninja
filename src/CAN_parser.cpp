@@ -41,6 +41,7 @@ g++ SOCKET.cpp -o socket_node -I/opt/ros/hydro/include -L/opt/ros/hydro/lib -Wl,
 #include "Class_SRR_track.h"
 #include "ClassSRRCluster.h"
 #include "ClassARSTarget.h"
+#include "ClassARSObject.h"
 
 using namespace std;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
@@ -123,6 +124,8 @@ int main(int argc, char** argv){
 	SRRCluster cluster1(0x270);
 	
 	ARSTarget target1(0x200);
+	
+	ARSObject object1(0x200);
 	
 	
 	int testrun = 1000, g=0;
