@@ -92,7 +92,7 @@ void ARSObject::SetARSMsgID(int ARS_Object_id)
 
 
 /*
-Here we can see some data parsing from CAN SRR 2XX.
+Here we can see some data parsing from ARS.
 For more information check documentation.
 Class saves only last message cycle.
 */
@@ -100,55 +100,76 @@ Class saves only last message cycle.
 void ARSObject::SetObjectStatus(struct can_frame frame)
 {
 
-	NoOfObjects;
-	MeasCounter;
-	
+	NoOfObjects = frame.data[0];
+	MeasCounter = frame.data[1]*256 + frame.data[2];
+	InterfaceVersionNumber = frame.data[4] & 0x0F;
 	
 	/*
 	Object STATUS used  exclusive ONLY for the 
 	automotive applications and NOT for 
 	industrial functions. 
 	*/
-	SensorOutputReduced; 
-	SensorExternalDisturbed; 
-	SensorSwitchedOff; 
-	SensorDefective;
-	SensorSupplyVoltageLow;
-	SensorRxInvalid;
-	Reserved;
-	InterfaceVersionNumber;
-	NumOfLaneRight;
-	NumOfLanesLeft;
-	LatDistToBorderLeft;
-	LatDistToBorderRight;
 	
+	/*
+	Needed? working?
+	SensorOutputReduced = frame.data[3] & 0x01;
+	SensorExternalDisturbed = frame.data[3] & 0x02;
+	SensorSwitchedOff = frame.data[3] & 0x04;
+	SensorDefective = frame.data[3] & 0x08;
+	SensorDefective = frame.data[3] & 0x10;
+	SensorSupplyVoltageLow = frame.data[3] & 0x20;
+	SensorRxInvalid  = frame.data[3] & 0x40;
+	Reserved = frame.data[3] & 0x80;
+	NumOfLaneRight = (frame.data[4] >> 4) & 0x03;
+	NumOfLanesLeft = (frame.data[4] >> 6) & 0x03;
+	LatDistToBorderLeft = (frame.data[5] * 0.1;
+	LatDistToBorderRight = (frame.data[6] * 0.1;
+	*/
 }
 
 void ARSObject::SetObject1(struct can_frame frame)
 {
 
 
-	Obj_ID;
-	Obj_RolCount; 
-	Obj_LongDispl[ID];
-	Obj_VrelLong[ID];
-	Obj_AccelLong[ID]; 
-	Obj_ProbOfExist[ID];
-	Obj_DynProp[ID];
-	Obj_LatDispl[ID];
-	Obj_Length[ID];
-	Obj_Width[ID];
-	Obj_MeasStat[ID];
-
+	Obj_ID = frame.data[0] >> 2;
+	Obj_RolCount = frame.data[0] & 0x03; 
+	Obj_LongDispl[Obj_ID] = frame.data[1] * 4 + (frame.data[2] >> 5);
+	Obj_VrelLong[Obj_ID] = ( frame.data[2] & 0x1F ) * 128 + ( frame.data[3] >> 1 ) ;
+	Obj_AccelLong[Obj_ID] = ( frame.data[3] & 0x01 ) * 256 + frame.data[4]; 
+	Obj_ProbOfExist[Obj_ID] = frame.data[6] & 0x07;
+	Obj_DynProp[Obj_ID] = ( frame.data[6] >> 3 ) & 0x07;
+	Obj_LatDispl[Obj_ID] = frame.data[5] * 4 + ( frame.data[6] >> 6 ) ;
+	Obj_Length[Obj_ID] = frame.data[7] & 0x07;
+	Obj_Width[Obj_ID] = (frame.data[7] >> 3) & 0x07;
+	Obj_MeasStat[Obj_ID] = ( frame.data[7] >> 6 ) & 0x3;
+	
+	
+	Obj_LongDispl[Obj_ID] = Obj_LongDispl[Obj_ID] * 0.1;
+	Obj_VrelLong[Obj_ID] = Obj_VrelLong[Obj_ID] * 0.0625 * - 128;
+	Obj_AccelLong[Obj_ID] = Obj_AccelLong[Obj_ID] * 0.0625 - 16; 
+	Obj_LatDispl[Obj_ID] = Obj_LatDispl[Obj_ID] * 0.1 - 52;
+	
+	/*have to deal how we are going to display those*/
+	
+	/*
+	Obj_ProbOfExist[Obj_ID] = ;
+	Obj_DynProp[Obj_ID] = ;
+	Obj_Length[Obj_ID] = ;
+	Obj_Width[Obj_ID] = ;
+	Obj_MeasStat[Obj_ID] = ;
+	*/
 
 }
 
 void ARSObject::SetObject2(struct can_frame frame)
 {
 
-	Obj_RCSVal[ID];
-	Obj_LatSpeed[ID];
-	Obj_ObstacleProbability[ID];
-
+	Obj_RCSVal[Obj_ID] = frame.data[0];
+	Obj_LatSpeed[Obj_ID] = frame.data[1];
+	Obj_ObstacleProbability[Obj_ID] = frame.data[2] & 0x7F;
+	
+	Obj_RCSVal[Obj_ID] = Obj_RCSVal[Obj_ID] * 0.5 - 64;
+	Obj_LatSpeed[Obj_ID] = Obj_LatSpeed[Obj_ID] * 0.25 - 32;
+	
 }
 

@@ -39,7 +39,7 @@ private:
 	
 
 	/*Object 1 strcture*/
-	unsigned short int Obj_RolCount[64]; 
+	unsigned short int Obj_RolCount; 
 	int Obj_ID;
 	float Obj_LongDispl[64];
 	float Obj_VrelLong[64];
@@ -82,7 +82,7 @@ public:
     int GetID() { return ID; }
 
 	unsigned short int GetIndex(){ return Obj_ID;}
-	unsigned short int GetSumOfObjects(){ return Sum_Of_Objects;}
+	unsigned short int GetSumOfObjects(){ return NoOfObjects;}
 	float GetLongDispl(int i){ return Obj_LongDispl[i];}
 	float GetLatDispl(int i){ return Obj_LatDispl[i];}
 
