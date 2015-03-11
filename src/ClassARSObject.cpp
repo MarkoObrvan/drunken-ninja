@@ -133,12 +133,12 @@ void ARSObject::SetObject1(struct can_frame frame)
 	Obj_ID = frame.data[0] >> 2;
 	
 	Obj_RolCount = frame.data[0] & 0x03; 
-	Obj_LongDispl[Obj_ID-1] = frame.data[1] * 4 + (frame.data[2] >> 5);
+	Obj_LongDispl[Obj_ID-1] = frame.data[1] * 8 + ((frame.data[2] >> 5) & 0x07);
 	Obj_VrelLong[Obj_ID-1] = ( frame.data[2] & 0x1F ) * 128 + ( frame.data[3] >> 1 ) ;
 	Obj_AccelLong[Obj_ID-1] = ( frame.data[3] & 0x01 ) * 256 + frame.data[4]; 
 	Obj_ProbOfExist[Obj_ID-1] = frame.data[6] & 0x07;
 	Obj_DynProp[Obj_ID-1] = ( frame.data[6] >> 3 ) & 0x07;
-	Obj_LatDispl[Obj_ID-1] = frame.data[5] * 4 + ( frame.data[6] >> 6 ) ;
+	Obj_LatDispl[Obj_ID-1] = frame.data[5] * 4 + (( frame.data[6] >> 6 ) & 0x03);
 	Obj_Length[Obj_ID-1] = frame.data[7] & 0x07;
 	Obj_Width[Obj_ID-1] = (frame.data[7] >> 3) & 0x07;
 	Obj_MeasStat[Obj_ID-1] = ( frame.data[7] >> 6 ) & 0x3;

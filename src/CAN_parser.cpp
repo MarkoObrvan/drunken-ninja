@@ -94,7 +94,16 @@ int main(int argc, char** argv){
 
 	ros::NodeHandle nh;
 
-	ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2> ("output1", 10);
+	
+	/*
+	Separated publishers are MUST
+	if we want to keep display in rviz at the same time and
+	separated one scan from another!
+	*/
+	ros::Publisher pub1 = nh.advertise<sensor_msgs::PointCloud2> ("output1", 10);
+	ros::Publisher pub2 = nh.advertise<sensor_msgs::PointCloud2> ("output2", 10);
+	ros::Publisher pub3 = nh.advertise<sensor_msgs::PointCloud2> ("output3", 10);
+	ros::Publisher pub4 = nh.advertise<sensor_msgs::PointCloud2> ("output4", 10);
 	PointCloud::Ptr msg (new PointCloud);
 	msg->height = msg->width = 1;
 	msg->header.frame_id = "socketcanframe2";
@@ -156,7 +165,7 @@ int main(int argc, char** argv){
 		check class file.
 		*/	
 		if (track1.SRRMsgCheckout(frame)){
-cout << "Ne ulazi track" << endl;			
+cout << "Uazi track" << endl;			
 			for (int i=0; i<track1.GetNumOfTracks(); i++)
 			{
 				msg->points.push_back (pcl::PointXYZ(track1.GetLongDispl(i), track1.GetLatDispl(i), 0.0));
@@ -166,7 +175,7 @@ cout << "Ne ulazi track" << endl;
 				pcl::toROSMsg(*msg, output);				
 			}
 			
-			pub.publish (output);
+			pub3.publish (output);
 			msg->points.clear();
 
 		}
@@ -174,27 +183,28 @@ cout << "Ne ulazi track" << endl;
 		
 		/*SRR CLUSTER*/
 		if (cluster1.SRRMsgCheckout(frame)){
-cout << "Ne ulazi cluster" << endl;
+cout << "Ulazi cluster" << endl;
 			for (int i=0; i<cluster1.GetNumOfClusters(); i++)
 			{
+cout << "long disp: " << cluster1.GetLongDispl(i) << "   lat displ: " <<  cluster1.GetLatDispl(i) << endl;
 				msg->points.push_back (pcl::PointXYZ(cluster1.GetLongDispl(i), cluster1.GetLatDispl(i), 0.0));
 				msg->height = 0;
 				msg->width = 0;
 				msg->header.stamp =  g;
 				pcl::toROSMsg(*msg, output2);				
 			}
-			
-			pub.publish (output2);
+cout << endl;
+			pub1.publish (output2);
 			msg->points.clear();
 
 		}
 		
 		/*ARS TARGET*/
 		if (target1.ARSMsgCheckout(frame)){
-cout << "number of targets: "<< target1.GetSumOfTargets() <<"\n" << endl;
+//cout << "number of targets: "<< target1.GetSumOfTargets() <<"\n" << endl;
 			for (int i=0; i<target1.GetSumOfTargets(); i++)
 			{
-cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1.GetLatDispl(i) << endl; 
+//cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1.GetLatDispl(i) << endl; 
 				msg->points.push_back (pcl::PointXYZ(target1.GetLongDispl(i), target1.GetLatDispl(i), 0.0));
 				msg->height = 0;
 				msg->width = 0;
@@ -202,7 +212,7 @@ cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1
 				pcl::toROSMsg(*msg, OutTarget1);				
 			}
 			
-			pub.publish (OutTarget1);
+			pub4.publish (OutTarget1);
 			msg->points.clear();
 
 		}
@@ -210,52 +220,25 @@ cout << "long disp: " << target1.GetLongDispl(i) << "   lat displ: " <<  target1
 		/*ARS OBJECT*/
 		if (object1.ARSMsgCheckout(frame)){
 //cout << "number of targets: "<< object1.GetSumOfObjects() <<"\n" << endl;
+cout << "Ulazi object" << endl;
 			for (int i=0; i<object1.GetSumOfObjects(); i++)
 			{
 cout << "long disp: " << object1.GetLongDispl(i) << "   lat displ: " <<  object1.GetLatDispl(i) << endl;
-cout << endl; 
+ 
 				msg->points.push_back (pcl::PointXYZ(object1.GetLongDispl(i), object1.GetLatDispl(i), 0.0));
 				msg->height = 0;
 				msg->width = 0;
 				msg->header.stamp =  g;
 				pcl::toROSMsg(*msg, OutObject1);				
 			}
-			
-			pub.publish (OutObject1);
+cout << endl;			
+			pub2.publish (OutObject1);
 			msg->points.clear();
 
 		}
 		
 		
-		/*
-		deprecated code, will be removed in late versions
-		if (frame.can_id == track1.GetTrackStatus())
-		{
-			track1.SetTrackStatus(frame);
-		}
-		else if (frame.can_id == track1.GetTrack1())
-		{
-			if(track1.GetIndex() == 0)
-			{
-					pub.publish (output);
-					msg->points.clear();
-					cout << "PUBLISHED2" << endl;
-			}
-			track1.SetTrack1(frame);
-		}
-		else if (frame.can_id == track1.GetTrack2())
-		{
-			track1.SetTrack2(frame);
-			track1.Display();
-			msg->points.push_back (pcl::PointXYZ(track1.GetLongDispl(), track1.GetLatDispl(), 0.0));
-					//cout << "X axis long: " << track_1.Track_LongDispl << "Y axis lat: " << track_1.Track_LatDispl << endl;
-			msg->height = 0;
-			msg->width = 0;
 
-			msg->header.stamp =  g;
-			pcl::toROSMsg(*msg, output);
-		}
-		*/
 		
 		
 	

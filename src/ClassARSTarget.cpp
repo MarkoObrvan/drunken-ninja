@@ -63,7 +63,7 @@ int ARSTarget::ARSMsgCheckout (struct can_frame frame)
 		SetTarget2(frame);
 		
 		//DISPLAY IS HEREEEE!!!!!
-		Display();   //if (NoOfTarget2 < Sum_Of_Targets+2) 
+		//Display();   //if (NoOfTarget2 < Sum_Of_Targets+2) 
 		
 		if (NoOfTarget2 == Sum_Of_Targets)
 		{ 
@@ -116,7 +116,7 @@ void ARSTarget::SetTarget1(struct can_frame frame)
 	Tar_Dist_Rms[NoOfTarget1-1] = frame.data[1] & 0xff;
 	Tar_Ang_Rms[NoOfTarget1-1] = (frame.data[2]>>1) & 0xff;
 	Tar_Vrel_Rms[NoOfTarget1-1] = (frame.data[2] & 0x01)*256 + frame.data[3];
-	Tar_Vrel[NoOfTarget1-1] = frame.data[4] * 16 + frame.data[5] >> 4;
+	Tar_Vrel[NoOfTarget1-1] = frame.data[4] * 16 + (frame.data[5] >> 4) & 0x0f;
 	Tar_Dist[NoOfTarget1-1] = (((frame.data[5] & 0x07) * 256) + (frame.data[6] & 0xff));
 
 	Tar_Dist_Rms[NoOfTarget1-1] = Tar_Dist_Rms[NoOfTarget1-1] * 0.1 - 10;
