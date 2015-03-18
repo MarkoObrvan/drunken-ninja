@@ -47,8 +47,14 @@ using namespace std;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 
-int main(int argc, char** argv){
+int main(int argc, char *argv[]){
 
+
+	if (argc != 2)
+	{
+		cout << "Invalid arguments. Usage:\" can0 can1\"" << endl;
+		exit (EXIT_FAILURE);
+	}
 
 	/*
 	Initializing CAN over socket, just take it for granted, it works
@@ -57,7 +63,7 @@ int main(int argc, char** argv){
 	struct sockaddr_can addr;
 	struct ifreq ifr;
 	struct can_frame frame;
-	char *ifname = "can0";
+	char *ifname = argv[1];
 	int s, nbytes;
 	if((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		perror("Error while opening socket");
@@ -66,10 +72,13 @@ int main(int argc, char** argv){
  
 	strcpy(ifr.ifr_name, ifname);
 	ioctl(s, SIOCGIFINDEX, &ifr);
- 
+	cout << "name: " << ifname << "  index: " <<  ifr.ifr_ifindex << endl;
+
+
+
 	addr.can_family  = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex; 
-	addr.can_ifindex = 0; 
+	//addr.can_ifindex = 0; 
  
 	printf("%s at index %d\n", ifname, ifr.ifr_ifindex);
  
@@ -89,21 +98,38 @@ int main(int argc, char** argv){
 	and separated windows. msg2 is left as example, there will
 	be no usage of it in rest of code.
 	*/
-	
- 	ros::init(argc, argv, "SRR_node_2");
+	string temps = argv[1];
+ 	ros::init(argc, argv, temps);
 
 	ros::NodeHandle nh;
 
+	string outSwitcher[4];
+	
+	if (temps.compare("can1") == 0){
+		outSwitcher[0] = "can1_output1";
+		outSwitcher[1] = "can1_output2";
+		outSwitcher[2] = "can1_output3";
+		outSwitcher[3] = "can1_output4";
+	}
+		
+	else
+	{
+		outSwitcher[0] = "can0_output1";
+		outSwitcher[1] = "can0_output2";
+		outSwitcher[2] = "can0_output3";
+		outSwitcher[3] = "can0_output4";
+	}
+	
 	
 	/*
 	Separated publishers are MUST
 	if we want to keep display in rviz at the same time and
 	separated one scan from another!
 	*/
-	ros::Publisher pub1 = nh.advertise<sensor_msgs::PointCloud2> ("output1", 10);
-	ros::Publisher pub2 = nh.advertise<sensor_msgs::PointCloud2> ("output2", 10);
-	ros::Publisher pub3 = nh.advertise<sensor_msgs::PointCloud2> ("output3", 10);
-	ros::Publisher pub4 = nh.advertise<sensor_msgs::PointCloud2> ("output4", 10);
+	ros::Publisher pub1 = nh.advertise<sensor_msgs::PointCloud2> (outSwitcher[0], 10);
+	ros::Publisher pub2 = nh.advertise<sensor_msgs::PointCloud2> (outSwitcher[1], 10);
+	ros::Publisher pub3 = nh.advertise<sensor_msgs::PointCloud2> (outSwitcher[2], 10);
+	ros::Publisher pub4 = nh.advertise<sensor_msgs::PointCloud2> (outSwitcher[3], 10);
 	PointCloud::Ptr msg (new PointCloud);
 	msg->height = msg->width = 1;
 	msg->header.frame_id = "socketcanframe2";
@@ -219,11 +245,9 @@ cout << endl;
 		
 		/*ARS OBJECT*/
 		if (object1.ARSMsgCheckout(frame)){
-//cout << "number of targets: "<< object1.GetSumOfObjects() <<"\n" << endl;
-cout << "Ulazi object" << endl;
+
 			for (int i=0; i<object1.GetSumOfObjects(); i++)
 			{
-cout << "long disp: " << object1.GetLongDispl(i) << "   lat displ: " <<  object1.GetLatDispl(i) << endl;
  
 				msg->points.push_back (pcl::PointXYZ(object1.GetLongDispl(i), object1.GetLatDispl(i), 0.0));
 				msg->height = 0;
@@ -231,7 +255,6 @@ cout << "long disp: " << object1.GetLongDispl(i) << "   lat displ: " <<  object1
 				msg->header.stamp =  g;
 				pcl::toROSMsg(*msg, OutObject1);				
 			}
-cout << endl;			
 			pub2.publish (OutObject1);
 			msg->points.clear();
 
