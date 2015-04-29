@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Declare the name of the CMake Project
-project(drunken-ninja)
+project(drunken_ninja)
 
 find_package(PCL REQUIRED)
 find_package(sensor_msgs REQUIRED)

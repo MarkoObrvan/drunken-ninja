@@ -1,6 +1,9 @@
 #ifndef CLASS_SRR_CLUSTER_H
 #define CLASS_SRR_CLUSTER_H
  
+//ros.h
+//ros package.h
+
 class SRRCluster
 {
 private:
@@ -54,6 +57,9 @@ public:
 	unsigned short int GetNumOfClusters(){ return NoOfClusters;}
 	float GetLongDispl(int i){ return Cluster_Long[i];}
 	float GetLatDispl(int i){ return Cluster_Lat[i];}
+	float GetAngl(int i){ return Cluster_Azimuth[i];}
+	float GetRCS(int i){ return Cluster_RCSValue[i];}
+	float GetVel(int i){ return Cluster_Vrel[i];}
 
 };
  

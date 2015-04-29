@@ -1,10 +1,11 @@
 #ifndef CLASS_SRR_TRACK_H
 #define CLASS_SRR_TRACK_H
-
  
 class SRRTrack
 {
 private:
+	
+	ros::Publisher pub1;
 
 	unsigned short int ID;
 	unsigned short int Radar_Status;
@@ -63,11 +64,6 @@ public:
 	unsigned short int GetNumOfTracks(){ return NumOfTracks;}
 	float GetLongDispl(int i){ return Track_LongDispl[i];}
 	float GetLatDispl(int i){ return Track_LatDispl[i];}
-	
-	float GetVrelLong(int i){ return Track_VrelLong[i];}
-	float GetVrelLat(int i){ return Track_VrelLat[i];}
-	float GetRCS(int i){ return Track_RCSValue[i];}
-	float GetLifetime(int i){ return Track_Lifetime[i];}
 
 };
  
